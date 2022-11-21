@@ -19,6 +19,8 @@ function postImg() {
   const msg = `Today's equation:
 ${eai.equationString}
 
+Seed: ${seed}
+
 #GenerativeArt #ArtBot`;
 
   const tmpfile = `./IMG_${seed}_.png`;
