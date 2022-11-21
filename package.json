@@ -1,0 +1,16 @@
+{
+  "name": "equart",
+  "version": "0.0.1",
+  "description": "procedural image of the day mastodon bot",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "asteriskman@gmail.com",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "canvas": "^2.10.2",
+    "dotenv": "^16.0.3",
+    "mastodon": "^1.2.2"
+  }
+}
