@@ -286,6 +286,10 @@ class EquArtImg {
   getStream() {
     return this.canvas.createPNGStream();
   }
+  
+  getBuffer() {
+    return this.canvas.toBuffer();
+  }
 }
 
 exports.EquArtImg = EquArtImg;
