@@ -12,16 +12,39 @@ const M = new Mastodon({
   api_url: 'https://botsin.space/api/v1/'
 });
 
-function postMsg() {
-  const msg = 'Hello world';
+function postImg() {
+  console.log('POSTMSG');
+  const seed = (new Date()).getTime();
+  const eai = new EquArtImg.EquArtImg(seed);
+  const msg = `Today's equation:
+${eai.equationString}
 
-  //TODO: generate image
-  //TODO: attach image to post
-  //TODO: include equation info in post status
-  //TODO: include some hashtags in post status
+#GenerativeArt #ArtBot`;
 
+  const tmpfile = `./IMG_${seed}_.png`;
+
+  eai.toFile(tmpfile);
+
+  console.log('IMAGE GENERATED');
+
+  M.post('media', {file: fs.createReadStream(tmpfile)}).then(resp => {
+    console.log('MEDIARESP:', resp);
+    const mediaID = resp.data.id;
+    fs.unlinkSync(tmpFile);
+    M.post('statuses', {
+      status: msg, 
+      media_ids: [mediaID]
+    }, (err, data, response) => {
+      console.log('ERR:', err);
+      console.log('DATA:', data);
+      console.log('RESP:', response);
+    });
+  });
+}
+
+function postTxt(msg) {
   M.post('statuses', {
-    status: msg 
+    status: msg
   }, (err, data, response) => {
     console.log('ERR:', err);
     console.log('DATA:', data);
@@ -35,7 +58,7 @@ function tick() {
   const curDate = (new Date()).getDate();
   if (curDate !== lastDate) {
     console.log('POSTING @', new Date());
-    postMsg();
+    postImg();
     lastDate = curDate;
   }
 }
@@ -44,3 +67,6 @@ function tick() {
 setInterval(tick, 1000 * 60 * 5);
 
 console.log('loaded');
+
+//postImg();
+//postTxt('Hello Art!');
