@@ -32,7 +32,7 @@ Seed: ${seed}
   M.post('media', {file: fs.createReadStream(tmpfile)}).then(resp => {
     console.log('MEDIARESP:', resp);
     const mediaID = resp.data.id;
-    fs.unlinkSync(tmpFile);
+    fs.unlinkSync(tmpfile);
     M.post('statuses', {
       status: msg, 
       media_ids: [mediaID]
