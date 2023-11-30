@@ -1,18 +1,22 @@
+const inBrowser = (typeof navigator) !== 'undefined';
 
-const fs = require('fs');
-const Canvas = require('canvas');
+console.log('inBrowser', inBrowser);
+
+const fs = inBrowser ? undefined : require('fs');
+const Canvas = inBrowser ? undefined : require('canvas');
 
 
 class EquArtImg {
-  constructor(seed) {
+  constructor(seed, canvas, f) {
     this.imgSize = 512;
     this.cellSize = 2;
-    this.canvas = Canvas.createCanvas(this.imgSize, this.imgSize);
+    this.canvas = inBrowser ? canvas : Canvas.createCanvas(this.imgSize, this.imgSize);
     this.ctx = this.canvas.getContext('2d');
 
     this.width = Math.floor(this.imgSize / this.cellSize);
     this.height = this.width;
 
+    this.initialSeed = seed;
     this.seed = seed;
 
     this.symbolMap = {
@@ -23,15 +27,19 @@ class EquArtImg {
         {c: 10, s: ['e', 'e', '*']},
         {c: 10, s: ['e', 'e', '/']},
         {c: 10, s: ['e', 'e', '^']},
-        {c: 1, s: ['e', 'e', '**']},
+        {c: 1, s: ['e', 'e', 'p']},
         {c: 1, s: ['e', 's']},
         {c: 1, s: ['e', 't']},
-        {c: 1, s: ['e', 'ln']},
+        {c: 1, s: ['e', 'l']},
         {c: 1, s: ['e', 'e', '<']}
       ]
     };
 
-    this.genImg();
+    if (f === undefined) {
+      this.genImg();
+    } else {
+      this.renderEqu(f);
+    }
   }
 
   rnd() {
@@ -99,14 +107,16 @@ class EquArtImg {
     f.forEach( s => {
       switch (s) {
         case '<': {
-          stack.push(`(${stack.pop()} < ${stack.pop()})`)
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(`(${op2} < ${op1})`)
           break;
         }
         case 's': {
           stack.push(`sin(${stack.pop()})`);
           break;
         }
-        case 'as': {
+        case 'a': {
           stack.push(`asin(${stack.pop()})`);
           break;
         }      
@@ -114,7 +124,7 @@ class EquArtImg {
           stack.push(`tan(${stack.pop()})`);
           break;
         }
-        case 'ln': {
+        case 'l': {
           stack.push(`ln(${stack.pop()})`);
           break;
         }
@@ -127,23 +137,33 @@ class EquArtImg {
           break;
         }
         case '+': {
-          stack.push(`(${stack.pop()} + ${stack.pop()})`);
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(`(${op2} + ${op1})`);
           break;
         }
         case '*': {
-          stack.push(`(${stack.pop()} * ${stack.pop()})`);        
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(`(${op2} * ${op1})`);
           break;
         }
         case '/': {
-          stack.push(`(${stack.pop()} / ${stack.pop()})`);        
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(`(${op2} / ${op1})`);        
           break;
         }
-        case '**': {
-           stack.push(`(${stack.pop()} ** ${stack.pop()})`);
+        case 'p': {
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+           stack.push(`(${op2} ** ${op1})`);
            break;        
          }
         case '^': {
-          stack.push(`(${stack.pop()} ^ ${stack.pop()})`);        
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(`(${op2} ^ ${op1})`);        
           break;
         }
         default: {
@@ -155,20 +175,149 @@ class EquArtImg {
     return stack[0];
   }
 
+  static strToInfix(str) {
+    str = str.replaceAll(' ', '');
+    //need to replace multi-character functions with single characters to make splitting easier
+    const fnMap = [
+      ['sin', 's'],
+      ['asin', 'a'],
+      ['tan', 't'],
+      ['ln', 'l'],
+      ['**', 'p']
+    ];
+
+    fnMap.forEach( m => {
+      str = str.replaceAll(m[0], m[1]);
+    });
+
+    let f = str.split``;
+    
+    return f;
+  }
+
+  static infixToPostfix(f) {
+    //when you see an operator, remove the first open parenthesis to the left
+    //  and move the operator to the right of the parenthesis at the same level as the one removed
+    /*
+      (((3+6)*(2-4))+7)
+      ((36+*(2-4))+7)
+      36+24-*7+
+    */
+    //we also need to convert prefix parts of the equation into postfix
+    //sin(x + y)
+    //
+    //y x + s
+    const curF = f.map( v => {
+      if (v !== 'y' && v !== 'x') {
+        //then it's an operator
+        return {val: v, moved: false};
+      } else {
+        return {val: v};
+      }
+    });
+
+    let i;
+    let j;
+
+    //convert prefix operators to postfix
+    i = 0;
+    const prefixChars = 'satl';
+    while (i < curF.length) {
+      const curElement = curF[i];
+      const curSymbol = curElement.val;
+      if (prefixChars.indexOf(curSymbol) !== -1 && !curElement.moved) {
+        //remove from curF
+        const op = curF.splice(i, 1)[0];
+        op.moved = true;
+        //find the closing paren
+        let plevel = 0;
+        j = i
+        while (j < curF.length) {
+          const jval = curF[j].val; 
+          if (jval === '(') {
+            plevel++;
+          }
+          if (jval === ')') {
+            plevel--;
+            if (plevel === 0) {
+              curF.splice(j + 1, 0, op);
+              break;
+            }
+          }
+          j++;
+        }
+      } else {
+        //skip
+        i++;
+      }
+    }
+
+    i = 0;
+    const ignoreChars = '()xysatl';
+    while (i < curF.length) {
+      const curElement = curF[i];
+      const curSymbol = curElement.val;
+      if (ignoreChars.indexOf(curSymbol) !== -1) {
+        //parenthesis or an operand so nothing to do
+        i++;
+      } else {
+        if (curElement.moved) {
+          //operator but already moved
+          i++;
+        } else {
+          //operator so need to make changes
+          //remove first ( to the left
+          j = i - 1;
+          while (j >= 0) {
+            if (curF[j].val === '(') {
+              curF.splice(j, 1);
+              i--; //move back 1 space so we're still pointing at the operator after removing 1 item
+              break;
+            }
+            j--;
+          }
+          //move the operator to the right
+          const op = curF.splice(i, 1)[0];
+          op.moved = true;
+          let plevel = 0;
+          j = i;
+          while (j < curF.length) {
+            const jval = curF[j].val; 
+            if (jval === '(') {
+              plevel++;
+            }
+            if (jval === ')') {
+              plevel--;
+              if (plevel === -1) {
+                curF[j] = op;
+                break;
+              }
+            }
+            j++;
+          }
+        }
+      }
+    }
+
+    return curF.map(v => v.val).join``.replaceAll(/[()]/g, '').split('');
+  }
+
   evalFunction(f, x, y) {
     const stack = [];
 
     f.forEach( s => {
       switch (s) {
         case '<': {
-          stack.push(+(stack.pop() < stack.pop()));
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(+(op2 < op1));
           break;
         }
         case 's': {
           stack.push(Math.sin(stack.pop()));
           break;
         }
-        case 'as': {
+        case 'a': {
           stack.push(Math.asin(stack.pop()));
           break;
         }      
@@ -176,7 +325,7 @@ class EquArtImg {
           stack.push(Math.tan(stack.pop()));
           break;
         }
-        case 'ln': {
+        case 'l': {
           stack.push(Math.log(stack.pop()));
           break;
         }
@@ -189,23 +338,33 @@ class EquArtImg {
           break;
         }
         case '+': {
-          stack.push(stack.pop() + stack.pop());
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(op2 + op1);
           break;
         }
         case '*': {
-          stack.push(stack.pop() * stack.pop());
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(op2 * op1);
           break;
         }
         case '/': {
-          stack.push(stack.pop() / stack.pop());
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(op2 / op1);
           break;
         }
-        case '**': {
-           stack.push(stack.pop() ** stack.pop());
+        case 'p': {
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+           stack.push(op2 ** op1);
            break;        
          }
         case '^': {
-          stack.push(stack.pop() ^ stack.pop());
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(op2 ^ op1);
           break;
         }
         default: {
@@ -245,7 +404,7 @@ class EquArtImg {
     return complexValue;
   }
 
-  genImg() {
+  genEqu() {
     let f = this.rndFunction();
     let fscore = this.getFunctionScore(f);
     let rerollCount = 0;
@@ -260,6 +419,11 @@ class EquArtImg {
     this.equationString = this.postfixToInfix(f);
     this.equationScore = fscore;
 
+    return f;
+  }
+
+  renderEqu(f) {
+    this.seed = this.initialSeed;
     const colorMin = this.rnd() * 360;
     const colorRange = this.rnd() * 180 + 180;
     const sat = 50 + 50 * this.rnd();
@@ -278,6 +442,11 @@ class EquArtImg {
     }
   }
 
+  genImg() {
+    const f = this.genEqu();
+    this.renderEqu(f);
+  }
+
   toFile(filename) {
     const buf = this.canvas.toBuffer();
     fs.writeFileSync(filename, buf);
@@ -292,4 +461,7 @@ class EquArtImg {
   }
 }
 
-exports.EquArtImg = EquArtImg;
+
+if (!inBrowser) {
+  exports.EquArtImg = EquArtImg;
+}
