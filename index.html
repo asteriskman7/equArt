@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>equArt Explorer</title>
+    <link rel="icon" href="EquArtAvatar.png">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <div id='banner'>
+      <div id='bannerText'><img id='bannerIcon' src='EquArtAvatar.png'>equArt Explorer</div>
+    </div>
+    <div id='headerContainer'>
+      <div>Seed</div><div><input id='inputSeed' class="headerInput" type='number'></div>
+        <div class='bdiv'><button id='bgenEqu'>Gen from seed</button></div>
+      <div>Equation</div><div><textarea id='inputEqu' class="headerInput" type='entry'></textarea></div>
+        <div class='bdiv'><button id='bgenImg'>Gen from equation</button></div>
+    </div>
+    <div id='msgDiv'>
+    </div>
+    <canvas id='cmain' width='512' height='512'></canvas>
+    <script src="EquArtImg.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>

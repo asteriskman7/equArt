@@ -1,0 +1,73 @@
+body {
+  background-color: #191b22;
+  font-family: sans-serif;
+  color: #ffffff;
+  display: grid;
+  justify-content: center;
+}
+
+
+#banner {
+  background-image: url('EquArtBanner.png');
+  width: 512px;
+  height: 171px;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  box-shadow: 3px 3px 8px 0px black;
+}
+
+#bannerText {
+  font-size: 24pt;
+  background-color: hsla(0, 0%, 60%, 0.7);
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 3px 3px 8px 0px #3f3f3f;
+}
+
+#bannerIcon {
+  width: 64px;
+  margin-right: 8px;
+  border-radius: 6px;
+  border: 2px solid #545454;
+  box-shadow: 3px 3px 8px 0px #3f3f3f;
+}
+
+#headerContainer {
+  display: grid;
+  grid-template-columns: 5em 1fr 8em;
+  width: 512px;
+  background-color: #282c37;
+  margin: 10px 0px;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 3px 3px 8px 0px black;
+}
+
+#msgDiv {
+  display: none;
+  width: 512px;
+  background-color: #282c37;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 3px 3px 8px 0px black;
+}
+
+.headerInput {
+  width: 90%;
+  resize: vertical;
+}
+
+.bdiv {
+  display: grid;
+}
+
+canvas {
+  background: white;
+  box-shadow: 3px 3px 8px 0px black;
+}
+
