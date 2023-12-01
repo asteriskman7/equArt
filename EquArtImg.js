@@ -7,7 +7,7 @@ const Canvas = inBrowser ? undefined : require('canvas');
 
 
 class EquArtImg {
-  constructor(seed, canvas, f) {
+  constructor(seed, canvas, f, colorMin, colorRange) {
     this.imgSize = 512;
     this.cellSize = 2;
     this.canvas = inBrowser ? canvas : Canvas.createCanvas(this.imgSize, this.imgSize);
@@ -38,7 +38,7 @@ class EquArtImg {
     if (f === undefined) {
       this.genImg();
     } else {
-      this.renderEqu(f);
+      this.renderEqu(f, colorMin, colorRange);
     }
   }
 
@@ -101,7 +101,7 @@ class EquArtImg {
     return f;
   }
 
-  postfixToInfix(f) {
+  static postfixToInfix(f) {
     const stack = [];
 
     f.forEach( s => {
@@ -416,16 +416,18 @@ class EquArtImg {
       fscore = this.getFunctionScore(f);
       rerollCount++;
     }
-    this.equationString = this.postfixToInfix(f);
+    this.equationString = EquArtImg.postfixToInfix(f);
     this.equationScore = fscore;
 
     return f;
   }
 
-  renderEqu(f) {
+  renderEqu(f, colorMinArg, colorRangeArg) {
     this.seed = this.initialSeed;
-    const colorMin = this.rnd() * 360;
-    const colorRange = this.rnd() * 180 + 180;
+    const colorMin = colorMinArg ?? this.rnd() * 360;
+    const colorRange = colorRangeArg ?? this.rnd() * 180 + 180;
+    this.colorMin = colorMin;
+    this.colorRange = colorRange;
     const sat = 50 + 50 * this.rnd();
 
     for (let y = 0; y < this.height; y++) {  
