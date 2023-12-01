@@ -1,9 +1,3 @@
-/*
-  TODO:
-    add link to this tool in posted messages
-    add text to readme to point to this tool
-*/
-
 class App {
   constructor() {
     this.UI = {};
