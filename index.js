@@ -1,9 +1,8 @@
 /*
   TODO:
-    add detailed information about image generation
-    add detailed information about how to use the tool
     add link to this tool in posted messages
     add text to readme to point to this tool
+    get seed/equation/colors from URL
 */
 
 class App {
@@ -82,19 +81,19 @@ class App {
   updateColorRangeStyle(min, range, redraw = true) {
     const step = range / 12;
     this.UI.colorRange.style.background = `linear-gradient(90deg,
-      hsl(${min + 0 * step}, 100%, 50%),
-      hsl(${min + 1 * step}, 100%, 50%),
-      hsl(${min + 2 * step}, 100%, 50%),
-      hsl(${min + 3 * step}, 100%, 50%),
-      hsl(${min + 4 * step}, 100%, 50%),
-      hsl(${min + 5 * step}, 100%, 50%),
-      hsl(${min + 6 * step}, 100%, 50%),
-      hsl(${min + 7 * step}, 100%, 50%),
-      hsl(${min + 8 * step}, 100%, 50%),
-      hsl(${min + 9 * step}, 100%, 50%),
-      hsl(${min + 10* step}, 100%, 50%),
-      hsl(${min + 11* step}, 100%, 50%),
-      hsl(${min + 12* step}, 100%, 50%)
+      hsl(${min + 0 * step}, 75%, 50%),
+      hsl(${min + 1 * step}, 75%, 50%),
+      hsl(${min + 2 * step}, 75%, 50%),
+      hsl(${min + 3 * step}, 75%, 50%),
+      hsl(${min + 4 * step}, 75%, 50%),
+      hsl(${min + 5 * step}, 75%, 50%),
+      hsl(${min + 6 * step}, 75%, 50%),
+      hsl(${min + 7 * step}, 75%, 50%),
+      hsl(${min + 8 * step}, 75%, 50%),
+      hsl(${min + 9 * step}, 75%, 50%),
+      hsl(${min + 10* step}, 75%, 50%),
+      hsl(${min + 11* step}, 75%, 50%),
+      hsl(${min + 12* step}, 75%, 50%)
     )`;
 
     if (redraw) {

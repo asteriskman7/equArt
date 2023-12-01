@@ -34,10 +34,7 @@ body {
   box-shadow: 3px 3px 8px 0px #3f3f3f;
 }
 
-#headerContainer {
-  display: grid;
-  grid-template-columns: 5em 1fr 8em;
-  grid-row-gap: 6px;
+.infoBox {
   width: 512px;
   background-color: #282c37;
   margin: 10px 0px;
@@ -47,15 +44,14 @@ body {
   box-shadow: 3px 3px 8px 0px black;
 }
 
+#headerContainer {
+  display: grid;
+  grid-template-columns: 5em 1fr 8em;
+  grid-row-gap: 6px;
+}
+
 #msgDiv {
   display: none;
-  width: 512px;
-  background-color: #282c37;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 3px 3px 8px 0px black;
 }
 
 .headerInput {
@@ -74,7 +70,28 @@ body {
 canvas {
   background: white;
   box-shadow: 3px 3px 8px 0px black;
+  margin-bottom: 10px;
 }
 
 #colorRange {
+}
+
+#howToUse {
+}
+
+code {
+  background-color: hsl(224, 16%, 40%);
+  padding: 0px 3px;
+}
+
+h2 {
+  color: #6364ff;
+}
+
+h3 {
+  color: #6364ff;
+}
+
+.liigd::marker {
+  color: #6364ff;
 }
