@@ -16,10 +16,11 @@ function postImg() {
   console.log('POSTMSG');
   const seed = (new Date()).getTime();
   const eai = new EquArtImg.EquArtImg(seed);
+  const explorerBase = 'https://asteriskman7.github.io/equArt/?seed=';
   const msg = `Today's equation:
 ${eai.equationString}
-
 Seed: ${seed}
+Explorer: ${explorerBase}${seed} 
 
 #GenerativeArt #ArtBot`;
 
