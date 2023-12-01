@@ -134,7 +134,6 @@ class App {
     const urlParams = new URLSearchParams(queryString);
     const querySeed = urlParams.get('seed');
     const queryEqu = urlParams.get('equ');
-    console.log('equ', queryEqu);
     const queryMinColor = urlParams.get('color');
     const queryRange = urlParams.get('range');
 
