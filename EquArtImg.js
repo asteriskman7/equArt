@@ -142,6 +142,12 @@ class EquArtImg {
           stack.push(`(${op2} + ${op1})`);
           break;
         }
+        case '-': {
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(`(${op2} - ${op1})`);
+          break;
+        }
         case '*': {
           const op1 = stack.pop();
           const op2 = stack.pop();
@@ -343,6 +349,12 @@ class EquArtImg {
           stack.push(op2 + op1);
           break;
         }
+        case '-': {
+          const op1 = stack.pop();
+          const op2 = stack.pop();
+          stack.push(op2 - op1);
+          break;
+        }
         case '*': {
           const op1 = stack.pop();
           const op2 = stack.pop();
@@ -428,7 +440,7 @@ class EquArtImg {
     const colorRange = colorRangeArg ?? this.rnd() * 180 + 180;
     this.colorMin = colorMin;
     this.colorRange = colorRange;
-    const sat = 50 + 50 * this.rnd();
+    const sat = 75;// + 50 * this.rnd();
 
     for (let y = 0; y < this.height; y++) {  
       for (let x = 0; x < this.width; x++) {
