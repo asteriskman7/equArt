@@ -4,18 +4,18 @@
     add detailed information about how to use the tool
     add link to this tool in posted messages
     add text to readme to point to this tool
-    add button to generate random seed and redraw the image
 */
 
 class App {
   constructor() {
     this.UI = {};
-    'inputSeed,inputEqu,inputCMin,inputCRange,colorRange,bgenEqu,bgenImg,cmain,msgDiv'.split(`,`).forEach( id => {
+    'inputSeed,inputEqu,inputCMin,inputCRange,colorRange,bgenEqu,bgenImg,brnd,cmain,msgDiv'.split(`,`).forEach( id => {
       this.UI[id] = document.getElementById(id);
     });
 
     this.UI.bgenEqu.onclick = () => this.genEqu();
     this.UI.bgenImg.onclick = () => this.genImg();
+    this.UI.brnd.onclick = () => this.rndSeed();
     this.UI.inputCMin.oninput = () => this.updateColorRange();
     this.UI.inputCRange.oninput = () => this.updateColorRange();
 
@@ -43,7 +43,7 @@ class App {
       this.UI.inputEqu.value = eai.equationString;
       this.UI.inputCMin.value = eai.colorMin;
       this.UI.inputCRange.value = eai.colorRange;
-      this.updateColorRange();
+      this.updateColorRange(false);
     } else {
       this.UI.inputEqu.value = '';
       this.setMsg('Illegal seed. Must be an integer');
@@ -71,15 +71,15 @@ class App {
     const eai = new EquArtImg(seed, this.UI.cmain, f, this.colorMin, this.colorRange);
   }
 
-  updateColorRange() {
+  updateColorRange(redraw) {
     const min = parseFloat(this.UI.inputCMin.value);
     const range = parseFloat(this.UI.inputCRange.value);
     this.colorMin = min;
     this.colorRange = range;
-    this.updateColorRangeStyle(min, range);
+    this.updateColorRangeStyle(min, range, redraw);
   }
 
-  updateColorRangeStyle(min, range) {
+  updateColorRangeStyle(min, range, redraw = true) {
     const step = range / 12;
     this.UI.colorRange.style.background = `linear-gradient(90deg,
       hsl(${min + 0 * step}, 100%, 50%),
@@ -97,7 +97,9 @@ class App {
       hsl(${min + 12* step}, 100%, 50%)
     )`;
 
-    this.unbounce();
+    if (redraw) {
+      this.unbounce();
+    }
   }
 
   unbounce() {
@@ -106,6 +108,12 @@ class App {
     }
 
     this.unbounceTimer = setTimeout(() => this.genImg(), 100);
+  }
+
+  rndSeed() {
+    const seed = Math.round(Number.MAX_SAFE_INTEGER * Math.random());
+    this.UI.inputSeed.value = seed;
+    this.genEqu();
   }
 
 }

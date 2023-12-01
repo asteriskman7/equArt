@@ -37,6 +37,7 @@ body {
 #headerContainer {
   display: grid;
   grid-template-columns: 5em 1fr 8em;
+  grid-row-gap: 6px;
   width: 512px;
   background-color: #282c37;
   margin: 10px 0px;
@@ -58,8 +59,12 @@ body {
 }
 
 .headerInput {
-  width: 90%;
+  width: 96%;
   resize: vertical;
+}
+
+#inputSeed {
+  width: 85%;
 }
 
 .bdiv {
