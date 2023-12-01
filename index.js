@@ -2,7 +2,6 @@
   TODO:
     add link to this tool in posted messages
     add text to readme to point to this tool
-    get seed/equation/colors from URL
 */
 
 class App {
@@ -18,8 +17,11 @@ class App {
     this.UI.inputCMin.oninput = () => this.updateColorRange();
     this.UI.inputCRange.oninput = () => this.updateColorRange();
 
-    this.UI.inputSeed.value = (new Date()).getTime();
-    this.genEqu();
+    if (!this.getURL()) {
+      this.UI.inputSeed.value = (new Date()).getTime();
+      this.genEqu();
+    }
+
 
   }
 
@@ -43,6 +45,7 @@ class App {
       this.UI.inputCMin.value = eai.colorMin;
       this.UI.inputCRange.value = eai.colorRange;
       this.updateColorRange(false);
+      this.setURL('seed');
     } else {
       this.UI.inputEqu.value = '';
       this.setMsg('Illegal seed. Must be an integer');
@@ -68,6 +71,7 @@ class App {
       console.log(equChk);
     }
     const eai = new EquArtImg(seed, this.UI.cmain, f, this.colorMin, this.colorRange);
+    this.setURL('equ');
   }
 
   updateColorRange(redraw) {
@@ -115,6 +119,46 @@ class App {
     this.genEqu();
   }
 
+  setURL(mode) {
+    if (mode === 'seed') {
+      window.history.replaceState({}, '', `${location.pathname}?seed=${this.UI.inputSeed.value}`);
+    } else {
+      //convert + to %2b to encode correctly and remove spaces to save bytes
+      const equ = this.UI.inputEqu.value.replaceAll('+', '%2b').replaceAll(' ', '');
+      window.history.replaceState({}, '', `${location.pathname}?equ=${equ}&color=${this.colorMin}&range=${this.colorRange}`);
+    }
+  }
+
+  getURL() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const querySeed = urlParams.get('seed');
+    const queryEqu = urlParams.get('equ');
+    console.log('equ', queryEqu);
+    const queryMinColor = urlParams.get('color');
+    const queryRange = urlParams.get('range');
+
+    if (querySeed === null && queryEqu === null) {
+      return false;
+    }
+
+    if (querySeed !== null && queryEqu === null) {
+      this.UI.inputSeed.value = querySeed;
+      this.genEqu();
+    } else if (querySeed === null && queryEqu !== null) {
+      this.UI.inputSeed.value = '0';
+      this.UI.inputEqu.value = queryEqu;
+      this.colorMin = queryMinColor === null ? 0 : parseFloat(queryMinColor);
+      this.colorRange = queryRange === null ? 360 : parseFloat(queryRange);
+
+      this.UI.inputCMin.value = this.colorMin;
+      this.UI.inputCRange.value = this.colorRange;
+
+      this.genImg();
+    }
+
+    return true;
+  }
 }
 
 const app = new App();
